@@ -45,11 +45,12 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .screen[hidden]{display:none!important}
 
 /* ---------- 타이틀 ---------- */
-.title-screen{display:grid;gap:28px;padding-top:4vh}
+.title-screen{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;padding-top:4vh}
+.title-screen>*{min-width:0}
 .logo{font-family:var(--f-display);font-size:clamp(52px,11vw,112px);line-height:.95}
 .logo small{display:block;font-family:var(--f-body);font-size:15px;font-weight:500;color:var(--muted);margin-top:14px;letter-spacing:.02em}
-.mini-board{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:420px}
-.mini-board button{aspect-ratio:1;border:1px solid var(--rule-dim);display:block;background:transparent;padding:0;border-radius:0;cursor:pointer;transition:background .15s,transform .1s}
+.mini-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;width:100%;max-width:420px}
+.mini-board button{min-width:0;width:100%;aspect-ratio:1;border:1px solid var(--rule-dim);display:block;background:transparent;padding:0;border-radius:0;cursor:pointer;transition:background .15s,transform .1s}
 .mini-board button:hover{border-color:var(--rule)}
 .mini-board button:active{transform:scale(.92)}
 .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 28px;max-width:960px}
@@ -183,6 +184,31 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .skip-note{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .skip-btns{display:grid;gap:8px}
 .skip-btns .btn{padding:10px 12px;font-size:14px}
+.stickybar{margin-bottom:12px}
+.m-only{display:none}
+.fab,.sheet-head,.sheet-bg{display:none}
+@media (max-width:720px){
+  .m-only{display:inline}
+  .d-only{display:none}
+  #sGame{padding-bottom:72px}
+  .fab{display:inline-flex;align-items:center;gap:8px;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:16;background:var(--slab);color:var(--paper);border:1.5px solid var(--rule);padding:12px 16px;font-weight:700;font-size:14px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+  .fab .fab-count{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+  .fab .fab-dot{width:8px;height:8px;border-radius:50%;background:var(--rule-dim)}
+  .fab.ready{border-color:var(--warn)}
+  .fab.ready .fab-dot{background:var(--warn);animation:pulse 1.2s ease-in-out infinite}
+  @keyframes pulse{50%{transform:scale(1.6);opacity:.5}}
+  #aside{position:fixed;left:0;right:0;bottom:0;z-index:18;max-height:78vh;overflow:auto;background:var(--ink);border-top:1.5px solid var(--rule);padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .22s ease;visibility:hidden}
+  #aside.open{transform:none;visibility:visible}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;font-size:16px}
+  .sheet-close{background:transparent;border:1.5px solid var(--rule-dim);color:var(--paper);padding:6px 12px;font-size:13px}
+  .sheet-bg{position:fixed;inset:0;z-index:17;background:rgba(6,7,8,.6)}
+  .sheet-bg.open{display:block}
+  #aside>.panel{order:3}
+  #aside>.panel.wpanel{order:1}
+  #aside>.panel.skip{order:2}
+  .stickybar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--ink);margin-inline:-16px;padding:8px 16px 0;box-shadow:0 6px 12px -8px rgba(0,0,0,.8)}
+  .stickybar .turnline{margin-bottom:8px}
+}
 .hint{font-size:13px;color:var(--muted);margin-top:8px;min-height:20px}
 
 /* ---------- 모달 ---------- */
@@ -281,6 +307,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
   </div>
   <div class="layout">
     <div>
+      <div class="stickybar">
       <div class="turnline">
         <div class="turn-badge" id="turnBadge"><i></i><span id="turnText">-</span></div>
         <div class="row" style="align-items:center">
@@ -288,13 +315,16 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
           <div class="clock" id="clock">--</div>
         </div>
       </div>
-      <div class="timerbar" id="gameTimer" style="margin-bottom:12px"><i></i></div>
+      <div class="timerbar" id="gameTimer"><i></i></div>
+      </div>
       <div class="board" id="board"></div>
       <div class="hint" id="hint"></div>
       <div class="qlist-wrap"><div class="eyebrow" style="margin-top:14px">문제 목록</div><div class="qlist" id="qlist"></div></div>
     </div>
-    <aside class="stack">
-      <div class="panel">
+    <div class="sheet-bg" id="sheetBg"></div>
+    <aside class="stack" id="aside" aria-label="무기와 전황">
+      <div class="sheet-head"><strong>무기 · 전황</strong><button class="sheet-close" id="sheetClose" aria-label="닫기">닫기</button></div>
+      <div class="panel wpanel">
         <h3>무기</h3>
         <div class="weapons">
           <button class="weapon" id="wA"><span class="grade">A</span><span><strong>영토 뺏기</strong><span>내 차례에 상대 땅 1칸을 빼앗는다</span></span></button>
@@ -317,6 +347,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
       </div>
     </aside>
   </div>
+  <button class="fab" id="fab" aria-label="무기와 전황 열기"><span class="fab-dot"></span>무기 · 전황<span class="fab-count" id="fabCount"></span></button>
 </section>
 
 <!-- 최종 결과 -->
@@ -495,6 +526,7 @@ function mk(text,fn,solid){const b=document.createElement("button");b.className=
 
 /* ---------- 라운드 ---------- */
 function startRound(r){
+  closeSheet();
   S.round=r;S.epoch++;
   const qs=draw(ROUNDS[r].key,45);
   const slots=shuffle([...Array(49).keys()].filter(i=>i!==24)).slice(0,4);
@@ -641,11 +673,15 @@ function doSteal(i,X,cont){
 $("wA").onclick=()=>{
   if(!(S.phase==="pick"&&S.turn==="P"&&S.weapons.P.A))return;
   if(!S.board.some(c=>c.owner==="A"))return toast("빼앗을 상대 땅이 없습니다");
-  S.weaponMode=!S.weaponMode;render();
+  S.weaponMode=!S.weaponMode;closeSheet();render();
 };
-$("wC").onclick=()=>useC();
+$("wC").onclick=()=>{closeSheet();useC()};
+function openSheet(){$("aside").classList.add("open");$("sheetBg").classList.add("open")}
+function closeSheet(){$("aside").classList.remove("open");$("sheetBg").classList.remove("open")}
+$("fab").onclick=()=>$("aside").classList.contains("open")?closeSheet():openSheet();
+$("sheetClose").onclick=closeSheet;$("sheetBg").onclick=closeSheet;
 function skipRound(w){if(!S||!S.board.length||S.phase==="over"||S.phase==="idle"||$("sGame").hidden)return;log(`${w==="P"?nm("P"):nm("A")} 승리로 처리 (25 : 24)`,null);endRound(w==="P"?{P:25,A:24}:{P:24,A:25})}
-$("skipP").onclick=()=>skipRound("P");$("skipA").onclick=()=>skipRound("A");
+$("skipP").onclick=()=>{closeSheet();skipRound("P")};$("skipA").onclick=()=>{closeSheet();skipRound("A")};
 $("wB").onclick=()=>toast(S.owned.P.includes("B")?"B는 내 문제의 OX 화면에서 답하기 전에 선언합니다":"이번 난이도에서는 B가 지급되지 않았습니다");
 function useA(X,i){
   S.weapons[X].A=false;log(`무기 A [영토 뺏기] 사용`,X);
@@ -735,6 +771,9 @@ function renderWeapons(){
     const b=$("w"+k);const has=S.owned.P.includes(k);b.classList.toggle("none",!has);b.classList.toggle("used",has&&!W[k]);b.disabled=!en&&!(k==="B"&&W.B);
     b.classList.toggle("armed",k==="A"&&S.weaponMode);
   });
+  const usable=(myPick&&W.A)||(S.turn==="A"&&(S.phase==="pick"||S.phase==="answer")&&W.C);
+  const left=["A","B","C"].filter(k=>W[k]).length;
+  $("fab").classList.toggle("ready",!!usable);$("fabCount").textContent=`${left}/${S.owned.P.length}`;
   ["A","B","C"].forEach(k=>{const e=$("aiw"+k);e.hidden=!S.owned.A.includes(k);e.classList.toggle("used",!S.weapons.A[k])});$("aiwNone").hidden=S.owned.A.length>0;
 }
 function render(){
@@ -750,8 +789,8 @@ function render(){
   if(S.phase==="strategy")hint="실제 방송에서는 전략 회의 시간이 끝나면, 전략 회의 시간 중 작성한 메모를 확인할 수 없었습니다.";
   else if(S.weaponMode)hint="영토 뺏기: 빼앗을 상대 땅을 누르세요. 다시 A를 누르면 취소.";
   else if(S.phase==="steal")hint=S.stealFor==="P"?"한 줄 완성! 점선 표시된 상대 땅 중 하나를 고르세요.":`${nm("A")}이 빼앗을 땅을 고르는 중…`;
-  else if(S.phase==="pick")hint=S.turn==="P"?"빈 칸을 눌러 문제를 고르세요.":`${nm("A")}이 문제를 고르는 중… 무기 C로 흐름을 끊을 수 있습니다.`;
-  $("hint").textContent=hint;
+  else if(S.phase==="pick")hint=S.turn==="P"?"<span class=\"d-only\">빈 칸을 눌러 문제를 고르세요.</span><span class=\"m-only\">빈 칸 혹은 문제 목록의 문제를 클릭하여 도전할 문제를 선택할 수 있습니다.</span>":`${nm("A")}이 문제를 고르는 중… 무기 C로 흐름을 끊을 수 있습니다.`;
+  $("hint").innerHTML=hint;
   const stealMode=(S.phase==="steal"&&S.stealFor==="P")||S.weaponMode;
   const canPick=S.phase==="pick"&&S.turn==="P"&&!S.weaponMode;
   const bd=$("board");bd.innerHTML="";
