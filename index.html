@@ -187,6 +187,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .stickybar{margin-bottom:12px}
 .m-only{display:none}
 .fab,.sheet-head,.sheet-bg{display:none}
+.minimap{display:none}
 @media (max-width:720px){
   .m-only{display:inline}
   .d-only{display:none}
@@ -203,6 +204,15 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
   .sheet-close{background:transparent;border:1.5px solid var(--rule-dim);color:var(--paper);padding:6px 12px;font-size:13px}
   .sheet-bg{position:fixed;inset:0;z-index:17;background:rgba(6,7,8,.6)}
   .sheet-bg.open{display:block}
+  .fab.open{z-index:19;border-color:var(--rule)}
+  .fab.open .fab-count,.fab.open .fab-dot{display:none}
+  .sheet-close{display:none}
+  #aside{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .stickybar.away .minimap{display:grid;grid-template-columns:repeat(7,7px);gap:1px;padding:3px;background:var(--slab);border:1px solid var(--rule-dim);border-radius:2px;flex:none}
+  .minimap i{width:7px;height:7px;display:block;background:var(--slab-2)}
+  .minimap i.q{background:var(--rule-dim)}
+  .minimap i.cur{outline:1px solid var(--warn)}
+  .stickybar.away .turn-badge{font-size:13px;padding:5px 10px}
   #aside>.panel{order:3}
   #aside>.panel.wpanel{order:1}
   #aside>.panel.skip{order:2}
@@ -309,7 +319,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
     <div>
       <div class="stickybar">
       <div class="turnline">
-        <div class="turn-badge" id="turnBadge"><i></i><span id="turnText">-</span></div>
+        <div class="row" style="align-items:center;gap:10px;flex-wrap:nowrap;min-width:0"><button class="minimap" id="minimap" type="button" aria-label="문제판으로 이동"></button><div class="turn-badge" id="turnBadge"><i></i><span id="turnText">-</span></div></div>
         <div class="row" style="align-items:center">
           <button class="btn" id="btnSkipStrategy" hidden style="padding:8px 14px">회의 끝내기</button>
           <div class="clock" id="clock">--</div>
@@ -347,7 +357,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
       </div>
     </aside>
   </div>
-  <button class="fab" id="fab" aria-label="무기와 전황 열기"><span class="fab-dot"></span>무기 · 전황<span class="fab-count" id="fabCount"></span></button>
+  <button class="fab" id="fab" aria-label="무기와 전황 열기"><span class="fab-dot"></span><span id="fabLabel">무기 · 전황</span><span class="fab-count" id="fabCount"></span></button>
 </section>
 
 <!-- 최종 결과 -->
@@ -676,8 +686,10 @@ $("wA").onclick=()=>{
   S.weaponMode=!S.weaponMode;closeSheet();render();
 };
 $("wC").onclick=()=>{closeSheet();useC()};
-function openSheet(){$("aside").classList.add("open");$("sheetBg").classList.add("open")}
-function closeSheet(){$("aside").classList.remove("open");$("sheetBg").classList.remove("open")}
+function openSheet(){$("aside").classList.add("open");$("sheetBg").classList.add("open");$("fab").classList.add("open");$("fabLabel").textContent="닫기";$("fab").setAttribute("aria-label","무기와 전황 닫기")}
+function closeSheet(){$("aside").classList.remove("open");$("sheetBg").classList.remove("open");$("fab").classList.remove("open");$("fabLabel").textContent="무기 · 전황";$("fab").setAttribute("aria-label","무기와 전황 열기")}
+$("minimap").onclick=()=>$("board").scrollIntoView({behavior:"smooth",block:"center"});
+if("IntersectionObserver" in window){new IntersectionObserver(es=>{es.forEach(e=>document.querySelector(".stickybar").classList.toggle("away",!e.isIntersecting&&e.boundingClientRect.top<0))},{threshold:0}).observe($("board"))}
 $("fab").onclick=()=>$("aside").classList.contains("open")?closeSheet():openSheet();
 $("sheetClose").onclick=closeSheet;$("sheetBg").onclick=closeSheet;
 function skipRound(w){if(!S||!S.board.length||S.phase==="over"||S.phase==="idle"||$("sGame").hidden)return;log(`${w==="P"?nm("P"):nm("A")} 승리로 처리 (25 : 24)`,null);endRound(w==="P"?{P:25,A:24}:{P:24,A:25})}
@@ -795,6 +807,7 @@ function render(){
   const canPick=S.phase==="pick"&&S.turn==="P"&&!S.weaponMode;
   const bd=$("board");bd.innerHTML="";
   const ql=$("qlist");ql.innerHTML="";
+  const mm=$("minimap");mm.innerHTML=S.board.map((c,i)=>`<i class="${c.owner?"":(c.type==="mystery"&&!c.opened?"q":"")}${i===S.current?" cur":""}"${c.owner?` style="background:${cv(c.owner).v}"`:""}></i>`).join("");
   S.board.forEach((c,i)=>{
     const b=document.createElement("button");b.className="cell";b.type="button";
     const showText=c.type==="q"||(c.type==="hidden"&&c.opened);
