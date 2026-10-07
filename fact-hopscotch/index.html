@@ -58,9 +58,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .rules b{display:block;font-size:13px;color:var(--t-gold);letter-spacing:.08em;margin-bottom:4px}
 .rules p{margin:0;color:#c9c6bf;font-size:14px}
 .disclaimer{font-size:12px;color:var(--muted)}
-.back{margin-bottom:-14px;justify-self:start;align-self:start;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;padding:4px 0}
-.back:hover{color:var(--paper)}
+.topbar{display:flex;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--rule-dim)}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--paper);text-decoration:none;border:1.5px solid var(--rule-dim);padding:6px 12px 6px 8px;font-size:13px;font-weight:700;border-radius:2px;transition:border-color .15s,background .15s}
+.back:hover{border-color:var(--rule);background:var(--slab)}
 .back:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.back svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .links{display:flex;flex-wrap:wrap;gap:10px}
 .links a{display:inline-flex;align-items:center;gap:8px;color:var(--paper);text-decoration:none;border:1.5px solid var(--rule-dim);padding:8px 14px 8px 10px;font-size:14px;font-weight:500;border-radius:2px;transition:border-color .15s,background .15s}
 .links a:hover{border-color:var(--rule);background:var(--slab)}
@@ -253,11 +255,10 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 
 <!-- 타이틀 -->
 <section class="screen title-screen" id="sTitle">
-  <a class="back" href="../">← 게임 선택</a>
+  <nav class="topbar" aria-label="메인 화면"><a class="back" href="../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>전쟁</span></a></nav>
   <div class="eyebrow">더 커뮤니티 2: 보이지 않는 손</div>
   <h1 class="logo">팩트<br>땅따먹기<small>상식 O·X퀴즈를 맞히고 상대보다 더 많은 땅을 차지하세요.</small></h1>
   <div class="mini-board" id="miniBoard" aria-label="칸을 눌러 색을 바꿔 보세요"></div>
-  <div class="row"><button class="btn solid" id="btnStart">게임 시작</button></div>
   <div class="rules">
     <div><b>키워드</b><p>정치·경제 → 문화 산업 → 일반 상식. 2라운드를 먼저 이기면 승리.</p></div>
     <div><b>정답과 오답</b><p>정답이면 그 칸을 갖고 계속 문제를 고릅니다. 오답이면 칸은 상대 땅, 차례도 넘어갑니다.</p></div>
@@ -266,14 +267,8 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
     <div><b>한 줄 완성</b><p>가로·세로·대각선 한 줄을 모두 차지하면 즉시 상대 땅 1칸을 빼앗습니다.</p></div>
     <div><b>무기</b><p>A 영토 뺏기 · B 흐름 유지 · C 흐름 끊기. 난이도에 따라 나와 상대의 보유 무기 개수가 달라집니다. 각 무기는 게임 중 1번만 사용 가능하며, 라운드별 사용 개수에는 제한이 없습니다.</p></div>
   </div>
-  <nav class="links" aria-label="더 커뮤니티 2 관련 링크">
-    <a href="https://thecommunity.co.kr/" target="_blank" rel="noopener" title="홈페이지"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/></svg><span>홈페이지</span></a>
-    <a href="https://www.youtube.com/playlist?list=PLec4tvPMs22Y" target="_blank" rel="noopener" title="유튜브"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="3.5"/><path d="M10 9.2v5.6l4.8-2.8z" class="fill"/></svg><span>유튜브</span></a>
-    <a href="https://www.instagram.com/wavve.official" target="_blank" rel="noopener" title="인스타그램"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1" class="fill"/></svg><span>인스타그램</span></a>
-    <a href="https://www.wavve.com/player/vod?contentid=C9901_C99000000192_01_0008.1" target="_blank" rel="noopener" title="웨이브"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9c2.4-2.4 4.8-2.4 7.2 0s4.8 2.4 7.2 0 4.8-2.4 4.6-.2"/><path d="M2.5 15c2.4-2.4 4.8-2.4 7.2 0s4.8 2.4 7.2 0 4.8-2.4 4.6-.2"/></svg><span>웨이브</span></a>
-    <a class="report" href="https://forms.gle/siNd21puWwCDBgua8" target="_blank" rel="noopener" title="오류 제보"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg><span>오류 제보</span></a>
-  </nav>
-  <p class="disclaimer">웨이브(Wavve)의 〈더 커뮤니티2: 보이지 않는 손〉에 등장하는 게임으로 만든 비공식 팬메이드 게임입니다.</p>
+  <div class="row"><button class="btn solid" id="btnStart">게임 시작</button></div>
+  <p class="disclaimer">웨이브(Wavve)의 〈더 커뮤니티2: 보이지 않는 손〉에 등장하는 게임을 기반으로 만든 비공식 팬메이드 게임입니다.</p>
 </section>
 
 <!-- 색 선택 -->
